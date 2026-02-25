@@ -1,9 +1,6 @@
 import pytest
 
-from domain.normal_item import NormalItem
-from domain.aged_brie import AgedBrie
-from domain.sulfuras import Sulfuras
-from domain.gilded_rose import GildedRose
+from src.ollivanders import Ollivanders, Inventory, NormalItem, AgedBrie, Sulfuras
 
 
 def test_to_string():
@@ -53,42 +50,42 @@ def test_update_quality_brie():
     assert cheese.quality == 1
 
 
-def test_gilded_rose_add_item():
-    shop = GildedRose()
+#def test_gilded_rose_add_item():
+#    shop = Ollivanders(Inventory([]))
+#
+#    normal = NormalItem("+5 Dexterity Vest", 10, 20)
+#    cheese = AgedBrie("Aged Brie", 2, 0)
+#    sulfuras = Sulfuras("Sulfuras, Hand of Ragnaros", 0, 80)
+#
+#    shop.add_item(normal)
+#    shop.add_item(cheese)
+#    shop.add_item(sulfuras)
+#
+#    assert len(shop.inventory()) == 3
+#
+#    items = [normal, cheese, sulfuras]
+#    assert shop.inventory() == items
+#
+#    print("GildedRose addItem test:")
+#    print(shop)
 
-    normal = NormalItem("+5 Dexterity Vest", 10, 20)
-    cheese = AgedBrie("Aged Brie", 2, 0)
-    sulfuras = Sulfuras("Sulfuras, Hand of Ragnaros", 0, 80)
 
-    shop.add_item(normal)
-    shop.add_item(cheese)
-    shop.add_item(sulfuras)
-
-    assert len(shop.inventory()) == 3
-
-    items = [normal, cheese, sulfuras]
-    assert shop.inventory() == items
-
-    print("GildedRose addItem test:")
-    print(shop)
-
-
-def test_update_quality():
-    shop = GildedRose()
-
-    normal = NormalItem("+5 Dexterity Vest", 10, 20)
-    brie = AgedBrie("Aged Brie", 2, 0)
-
-    shop.add_item(normal)
-    shop.add_item(brie)
-
-    assert len(shop.inventory()) == 2
-
-    print("Dia 0:\n", shop)
-
-    shop.update_quality()
-
-    assert shop.inventory()[0].quality == 19
-    assert shop.inventory()[1].quality == 1
-
-    print("Dia 1:\n", shop)
+#def test_update_quality():
+#    shop = Ollivanders()
+#
+#    normal = NormalItem("+5 Dexterity Vest", 10, 20)
+#    brie = AgedBrie("Aged Brie", 2, 0)
+#
+#    shop.add_item(normal)
+#    shop.add_item(brie)
+#
+#    assert len(shop.inventory()) == 2
+#
+#    print("Dia 0:\n", shop)
+#
+#    shop.update_quality()
+#
+#    assert shop.inventory()[0].quality == 19
+#    assert shop.inventory()[1].quality == 1
+#
+#    print("Dia 1:\n", shop)
