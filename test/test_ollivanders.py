@@ -168,3 +168,50 @@ def test_ollivanders_full_update():
     assert shop.inventory()[1].quality == 22
     # Sulfuras: Fijo en 80
     assert shop.inventory()[2].quality == 80
+
+
+
+
+def test_golden_master_progression():
+    shop = Ollivanders()
+    
+    # Inicializamos el inventario exacto del día 0
+    items = [
+        NormalItem("+5 Dexterity Vest", 10, 20),
+        AgedBrie("Aged Brie", 2, 0),
+        NormalItem("Elixir of the Mongoose", 5, 7),
+        Sulfuras("Sulfuras, Hand of Ragnaros", 0, 80),
+        Sulfuras("Sulfuras, Hand of Ragnaros", -1, 80),
+        BackstagePass("Backstage passes to a TAFKAL80ETC concert", 15, 20),
+        BackstagePass("Backstage passes to a TAFKAL80ETC concert", 10, 49),
+        BackstagePass("Backstage passes to a TAFKAL80ETC concert", 5, 49),
+        ConjuredItem("Conjured Mana Cake", 3, 6)
+    ]
+    
+    for item in items:
+        shop.add_item(item)
+
+    # --- VALIDACIÓN DÍA 1 ---
+    shop.update_date()
+    
+    inventory = shop.inventory()
+    assert inventory[0].sell_in == 9 and inventory[0].quality == 19 
+    assert inventory[1].sell_in == 1 and inventory[1].quality == 1
+    assert inventory[5].sell_in == 14 and inventory[5].quality == 21
+    assert inventory[8].sell_in == 2 and inventory[8].quality == 4
+
+    # --- VALIDACIÓN DÍA 5 ---
+    for _ in range(4): shop.update_date()
+    # Elixir en día 5: 0, 2
+    assert inventory[2].sell_in == 0 and inventory[2].quality == 2
+    # Backstage (10, 49) en día 5: 5, 50
+    assert inventory[6].sell_in == 5 and inventory[6].quality == 50
+
+    # --- VALIDACIÓN DÍA 10 ---
+    for _ in range(5): shop.update_date()
+    # Vest en día 10: 0, 0
+    assert inventory[0].sell_in == 0 and inventory[0].quality == 0
+    # Aged Brie en día 10: -8, 18
+    assert inventory[1].sell_in == -8 and inventory[1].quality == 18
+    # Conjured en día 10: -7, 0
+    assert inventory[8].sell_in == -7 and inventory[8].quality == 0

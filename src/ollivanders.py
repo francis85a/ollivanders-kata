@@ -101,15 +101,17 @@ class NormalItem(Item, Updateable):
             self.quality += value
         else:
             self.quality = 0
-    
-        assert 0 <= self.quality <= 50, "La calidad de un item no puede ser negativa ni mayor a 50"
+
+        if self.quality < 50:
+            assert 0 <= self.quality <= 50, "La calidad de un item no puede ser negativa ni mayor a 50"
 
     def update_quality(self):
-        self.setSell_in()
-        if self.sell_in < 0:
+
+        if self.sell_in <= 0:
             self.setQuality(-2)
         else:
             self.setQuality(-1)
+        self.setSell_in()
 
 
 class AgedBrie(NormalItem):
@@ -119,11 +121,14 @@ class AgedBrie(NormalItem):
 
 
     def update_quality(self):
-        self.setSell_in()
-        if self.sell_in < 0:
+
+        if self.sell_in <= 0:
             self.setQuality(2)
         else:
             self.setQuality(1)
+
+        self.setSell_in()
+
 
 
 class BackstagePass(NormalItem):
@@ -132,7 +137,7 @@ class BackstagePass(NormalItem):
         NormalItem.__init__(self, name, sell_in, quality)
 
     def update_quality(self):
-        self.setSell_in()
+
         if self.sell_in > 10:
             self.setQuality(1)
         elif self.sell_in > 5:
@@ -141,6 +146,9 @@ class BackstagePass(NormalItem):
             self.setQuality(3)
         else:
             self.quality = 0
+        
+        self.setSell_in()
+
             
         
 class ConjuredItem(NormalItem):
@@ -149,100 +157,22 @@ class ConjuredItem(NormalItem):
         NormalItem.__init__(self, name, sell_in, quality)
 
     def update_quality(self):
-        self.setSell_in()
+
         if self.sell_in <= 0:
             self.setQuality(-4)
         else:
             self.setQuality(-2)
 
-class Sulfuras(NormalItem):
-
-    def update_quality(self):
-        assert self.quality == 80, "Sulfuras es un item legendario y su calidad siempre debe ser 80"
-        pass
-
-        self.update_all_items()
-        self.date = date.today()
-
-    def add_item(self, item):
-        self.items.append(item)
-    
-    def inventory(self):
-        return self.items
-
-class NormalItem(Item, Updateable):
-
-    def __init__(self, name, sell_in, quality):
-        Item.__init__(self, name, sell_in, quality)
-
-    def setSell_in(self):
-        self.sell_in -= 1
-
-    def setQuality(self, value):
-        if self.quality + value > 50:
-            self.quality = 50
-        elif self.quality + value >= 0:
-            self.quality += value
-        else:
-            self.quality = 0
-    
-        assert 0 <= self.quality <= 50, "La calidad de un item no puede ser negativa ni mayor a 50"
-
-    def update_quality(self):
         self.setSell_in()
-        if self.sell_in < 0:
-            self.setQuality(-2)
-        else:
-            self.setQuality(-1)
 
-
-class AgedBrie(NormalItem):
-
-    def __init__(self, name, sell_in, quality):
-      NormalItem.__init__(self, name, sell_in, quality)
-
-
-    def update_quality(self):
-        self.setSell_in()
-        if self.sell_in < 0:
-            self.setQuality(2)
-        else:
-            self.setQuality(1)
-
-
-class BackstagePass(NormalItem):
-
-    def __init__(self, name, sell_in, quality):
-        NormalItem.__init__(self, name, sell_in, quality)
-
-    def update_quality(self):
-        self.setSell_in()
-        if self.sell_in > 10:
-            self.setQuality(1)
-        elif self.sell_in > 5:
-            self.setQuality(2)
-        elif self.sell_in > 0:
-            self.setQuality(3)
-        else:
-            self.quality = 0
-
-        
-class ConjuredItem(NormalItem):
-
-    def __init__(self, name, sell_in, quality):
-        NormalItem.__init__(self, name, sell_in, quality)
-
-    def update_quality(self):
-        self.setSell_in()
-        if self.sell_in <= 0:
-            self.setQuality(-4)
-        else:
-            self.setQuality(-2)
 
 class Sulfuras(NormalItem):
 
-    def update_quality(self):
+    def setQuality(self):
+        self.quality = 80
         assert self.quality == 80, "Sulfuras es un item legendario y su calidad siempre debe ser 80"
+    
+    def update_quality(self):
         pass
 
 
