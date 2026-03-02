@@ -42,49 +42,7 @@ class Ollivanders(Inventory):
     def getItems(self):
         return self.inventory.getItems()
 
-class Updateable():
-    
-    def update_quality(self):
-        pass
 
-class Item:
-
-    def __init__(self, name, sell_in, quality):
-        self.name = name
-        self.sell_in = sell_in
-        self.quality = quality
-
-    def __repr__(self):
-        return "%s, %s, %s" % (self.name, self.sell_in, self.quality)
-
-
-class Inventory:
-
-    def __init__(self, items):
-        self.items = items or []
-
-    def update_all_items(self):
-        for item in self.items:
-            item.update_quality()
-
-    def add_item(self, item):
-        self.items.append(item)
-
-class Ollivanders(Inventory):
-
-    def __init__(self):
-        Inventory.__init__(self, [])
-        self.date = date.today()
-    
-    def update_date(self):
-        self.update_all_items()
-        self.date = date.today()
-
-    def add_item(self, item):
-        self.items.append(item)
-    
-    def inventory(self):
-        return self.items
 
 class NormalItem(Item, Updateable):
 
@@ -171,7 +129,7 @@ class Sulfuras(NormalItem):
     def setQuality(self):
         self.quality = 80
         assert self.quality == 80, "Sulfuras es un item legendario y su calidad siempre debe ser 80"
-    
+
     def update_quality(self):
         pass
 
@@ -191,8 +149,7 @@ def main():
     shop.add_item(backstage)
     shop.update_date()
     shop.update_all_items()
-    shop.inventory()
-
-    print ("Dia 1:\n", sulfuras)
+    
+    print ("Dia 1:\n", normal)
 if __name__ == "__main__":
     main()
