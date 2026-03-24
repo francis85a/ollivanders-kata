@@ -1,23 +1,15 @@
-from datetime import date
-
-class Updateable():
-    
-    def update_quality(self):
-        pass
+from datetime import date, timedelta
 
 class Item:
-
     def __init__(self, name, sell_in, quality):
         self.name = name
         self.sell_in = sell_in
         self.quality = quality
 
     def __repr__(self):
-        return "%s, %s, %s" % (self.name, self.sell_in, self.quality)
+        return f"{self.name}, {self.sell_in}, {self.quality}"
 
-
-class Inventory():
-
+class Inventory:
     def __init__(self):
         self.items = []
 
@@ -28,112 +20,69 @@ class Inventory():
     def add_item(self, item):
         self.items.append(item)
     
-    def getItems(self):
+    def inventory(self):
         return self.items
 
 class Ollivanders(Inventory):
-
     def __init__(self):
         super().__init__()
-        self.date = date.today()
+        self.today = date.today()
     
-    def update_date(self):from datetime import date
+    def update_date(self):
+        self.today += timedelta(days=1)
+        self.update_all_items()
 
-    def getItems(self):
-        return self.inventory.getItems()
-
-
-
-class NormalItem(Item, Updateable):
-
-    def __init__(self, name, sell_in, quality):
-        Item.__init__(self, name, sell_in, quality)
-
-    def setSell_in(self):
-        self.sell_in -= 1
-
+class NormalItem(Item):
     def setQuality(self, value):
-        if self.quality + value > 50:
-            self.quality = 50
-        elif self.quality + value >= 0:
-            self.quality += value
-        else:
-            self.quality = 0
-
-        if self.quality < 50:
-            assert 0 <= self.quality <= 50, "La calidad de un item no puede ser negativa ni mayor a 50"
+        self.quality += value
+        if self.quality > 50: self.quality = 50
+        if self.quality < 0: self.quality = 0
 
     def update_quality(self):
-
-        if self.sell_in <= 0:
+        self.sell_in -= 1
+        if self.sell_in < 0:
             self.setQuality(-2)
         else:
             self.setQuality(-1)
-        self.setSell_in()
-
 
 class AgedBrie(NormalItem):
-
-    def __init__(self, name, sell_in, quality):
-      NormalItem.__init__(self, name, sell_in, quality)
-
-
     def update_quality(self):
-
-        if self.sell_in <= 0:
+        self.sell_in -= 1
+        if self.sell_in < 0:
             self.setQuality(2)
         else:
             self.setQuality(1)
-
-        self.setSell_in()
-
-
 
 class BackstagePass(NormalItem):
-
-    def __init__(self, name, sell_in, quality):
-        NormalItem.__init__(self, name, sell_in, quality)
-
     def update_quality(self):
-
-        if self.sell_in > 10:
-            self.setQuality(1)
-        elif self.sell_in > 5:
-            self.setQuality(2)
-        elif self.sell_in > 0:
-            self.setQuality(3)
-        else:
+        # Primero restamos el día
+        self.sell_in -= 1
+        
+        if self.sell_in < 0:
             self.quality = 0
-        
-        self.setSell_in()
+        elif self.sell_in <= 5:
+            self.setQuality(3)
+        elif self.sell_in <= 10:
+            self.setQuality(2)
+        else:
+            self.setQuality(1)
 
-            
-        
 class ConjuredItem(NormalItem):
-
-    def __init__(self, name, sell_in, quality):
-        NormalItem.__init__(self, name, sell_in, quality)
-
     def update_quality(self):
-
-        if self.sell_in <= 0:
+        self.sell_in -= 1
+        if self.sell_in < 0:
             self.setQuality(-4)
         else:
             self.setQuality(-2)
 
-        self.setSell_in()
-
-
-class Sulfuras(NormalItem):
-
-    def setQuality(self):
-        self.quality = 80
-        assert self.quality == 80, "Sulfuras es un item legendario y su calidad siempre debe ser 80"
+class Sulfuras(Item):
+    def __init__(self, name, sell_in, quality):
+        # Sulfuras es siempre 80 y no hereda límites de NormalItem
+        super().__init__(name, 0, 80)
 
     def update_quality(self):
         pass
-
-
+    
 def main():
     shop = Ollivanders()
     normal = NormalItem("+5 Dexterity Vest", 10, 20)
@@ -149,7 +98,7 @@ def main():
     shop.add_item(backstage)
     shop.update_date()
     shop.update_all_items()
-    
+
     print ("Dia 1:\n", normal)
 if __name__ == "__main__":
     main()

@@ -170,12 +170,29 @@ def test_ollivanders_full_update():
     assert shop.inventory()[2].quality == 80
 
 
+def test_ollivanders_full_update():
+    shop = Ollivanders()
+    items = [
+        ConjuredItem("Conjured", 10, 20),
+        BackstagePass("Pass", 11, 20),
+        Sulfuras("Sulfuras", 0, 80)
+    ]
+    for item in items:
+        shop.add_item(item)
+    
+    shop.update_date()
+    
+    # Conjured: 20 -> 18 (-2 porque sell_in pasa a 9)
+    assert shop.inventory()[0].quality == 18
+    # Backstage: 20 -> 22 (sell_in pasa de 11 a 10, rango < 10 suma +2)
+    assert shop.inventory()[1].quality == 22
+    # Sulfuras: Fijo en 80
+    assert shop.inventory()[2].quality == 80
 
 
 def test_golden_master_progression():
     shop = Ollivanders()
     
-    # Inicializamos el inventario exacto del día 0
     items = [
         NormalItem("+5 Dexterity Vest", 10, 20),
         AgedBrie("Aged Brie", 2, 0),
@@ -193,25 +210,37 @@ def test_golden_master_progression():
 
     # --- VALIDACIÓN DÍA 1 ---
     shop.update_date()
-    
     inventory = shop.inventory()
+    
     assert inventory[0].sell_in == 9 and inventory[0].quality == 19 
     assert inventory[1].sell_in == 1 and inventory[1].quality == 1
     assert inventory[5].sell_in == 14 and inventory[5].quality == 21
     assert inventory[8].sell_in == 2 and inventory[8].quality == 4
 
-    # --- VALIDACIÓN DÍA 5 ---
-    for _ in range(4): shop.update_date()
-    # Elixir en día 5: 0, 2
+    # --- VALIDACIÓN DÍA 5 (Pasamos 4 días más) ---
+    for _ in range(4): 
+        shop.update_date()
+        
+    # Elixir en día 5: sell_in pasa de 5 a 0. Calidad baja 1 por día: 7 - 5 = 2.
     assert inventory[2].sell_in == 0 and inventory[2].quality == 2
-    # Backstage (10, 49) en día 5: 5, 50
+    # Backstage en día 5: sell_in pasa de 10 a 5. Rango < 10 suma +2 por día. 49 + 2 = 50 (límite).
     assert inventory[6].sell_in == 5 and inventory[6].quality == 50
 
-    # --- VALIDACIÓN DÍA 10 ---
-    for _ in range(5): shop.update_date()
-    # Vest en día 10: 0, 0
-    assert inventory[0].sell_in == 0 and inventory[0].quality == 0
-    # Aged Brie en día 10: -8, 18
+    # --- VALIDACIÓN DÍA 10 (Pasamos 5 días más) ---
+    for _ in range(5): 
+        shop.update_date()
+        
+    # Vest en día 10: sell_in pasa a 0. Calidad: 20 - 10 = 10.
+    assert inventory[0].sell_in == 0 and inventory[0].quality == 10
+    
+    # Aged Brie en día 10: 
+    # Empezó sell_in 2, calidad 0.
+    # Días 1 y 2 (sell_in >= 0): suma +1 por día. Calidad = 2.
+    # Días 3 al 10 (8 días, sell_in < 0): suma +2 por día. 2 + (8 * 2) = 18.
     assert inventory[1].sell_in == -8 and inventory[1].quality == 18
-    # Conjured en día 10: -7, 0
+    
+    # Conjured en día 10:
+    # Empezó sell_in 3, calidad 6.
+    # Días 1 a 3 (sell_in >= 0): -2 por día. Calidad = 0.
+    # Días 4 al 10 (sell_in < 0): -4 por día. Sigue en 0 (límite inferior).
     assert inventory[8].sell_in == -7 and inventory[8].quality == 0
